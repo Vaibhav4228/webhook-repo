@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Actions Monitor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>GitHub Repository Actions</h1>
+        <div id="events"></div>
+    </div>
+    <script>
+        function fetchEvents() {
+            fetch('/events')
+                .then(response => response.json())
+                .then(events => {
+                    const eventsDiv = document.getElementById('events');
+                    eventsDiv.innerHTML = '';
+                    events.forEach(event => {
+                        let text = '';
+                        if (event.action === 'PUSH') {
+                            text = `${event.author} pushed to ${event.to_branch} on ${event.timestamp}`;
+                        } else if (event.action === 'PULL_REQUEST') {
+                            text = `${event.author} submitted a pull request from ${event.from_branch} to ${event.to_branch} on ${event.timestamp}`;
+                        } else if (event.action === 'MERGE') {
+                            text = `${event.author} merged branch ${event.from_branch} to ${event.to_branch} on ${event.timestamp}`;
+                        }
+                        const p = document.createElement('p');
+                        p.textContent = text;
+                        eventsDiv.appendChild(p);
+                    });
+                });
+        }
+
+        fetchEvents();
+        setInterval(fetchEvents, 15000);
+    </script>
+</body>
+
+</html>

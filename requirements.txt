@@ -1,0 +1,4 @@
+flask==2.0.1
+pymongo==4.3.3
+python-dotenv>=0.21.0
+werkzeug==2.0.3  # Compatible with Flask 2.0.1
