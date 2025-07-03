@@ -8,8 +8,15 @@ app = Flask(__name__)
 
 load_dotenv()
 
-mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-client = MongoClient(mongo_uri)
+mongo_uri = os.getenv("MONGO_URI")
+print("Connecting to MongoDB with URI:", mongo_uri) 
+
+client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+try:
+    client.server_info()  
+    print("MongoDB connection successful")
+except Exception as e:
+    print("MongoDB connection failed:", e)
 db = client["github_actions"]
 events_collection = db["events"]
 
@@ -22,6 +29,7 @@ def format_timestamp(timestamp_str):
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
+    print("Webhook received:", request.url, request.method, request.headers)
     payload = request.json
     event_type = request.headers.get("X-GitHub-Event")
 
